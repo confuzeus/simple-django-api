@@ -1,6 +1,10 @@
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+
+from simple_django.accounts.models import EmailAddress
+from simple_django.accounts.tasks import send_verification_email
 
 User = get_user_model()
 
@@ -46,3 +50,43 @@ class EmailSignupSerializer(serializers.Serializer):
         user.save()
         user_serializer = UserSerializer(instance=user)
         return {"tokens": user.get_auth_tokens(), "user": user_serializer.data}
+
+
+class EmailAddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EmailAddress
+        exclude = ["user"]
+
+
+class EmailVerificationSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    code = serializers.CharField()
+
+    def validate_code(self, value):
+        user = self.context["request"].user
+        try:
+            email: EmailAddress = user.email_addresses.get(
+                email=self.initial_data["email"]
+            )
+        except EmailAddress.DoesNotExist:
+            raise ValidationError("Invalid email address.")
+
+        cached_verification_code = cache.get(email.email_verification_cache_key)
+        if cached_verification_code is None:
+            send_verification_email.delay(email.id)
+            raise ValidationError(
+                "Verification code expired. Please check your email for a new one."
+            )
+        if cached_verification_code != value:
+            raise ValidationError(
+                "Invalid verification code. Please enter the correct one."
+            )
+
+        return value
+
+    def create(self, validated_data):
+        email_address: EmailAddress = self.context["request"].user.email_addresses.get(
+            email=validated_data["email"]
+        )
+        email_address.set_verified()
+        return email_address

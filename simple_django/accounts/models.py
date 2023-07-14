@@ -49,6 +49,11 @@ class EmailAddress(models.Model):
     def email_verification_cache_key(self):
         return f"email_verification_code_{self.id}"
 
+    def set_verified(self):
+        cache.cache.delete(self.email_verification_cache_key)
+        self.is_verified = True
+        self.save()
+
     def should_send_verification_email(self):
         if self.is_verified:
             return False
