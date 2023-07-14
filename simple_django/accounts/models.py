@@ -17,6 +17,18 @@ class User(AbstractUser):
         self.last_login = timezone.now()
         self.save()
 
+    @property
+    def email_verified(self):
+        verified = False
+        try:
+            email_address = self.email_addresses.primary()
+            if email_address.is_verified:
+                verified = True
+        except EmailAddress.DoesNotExist:
+            verified = False
+
+        return verified
+
     def get_auth_tokens(self, as_dict=True) -> UserAuthTokensDict | RefreshToken:
         refresh = RefreshToken.for_user(self)
         self.update_login_timestamp()
