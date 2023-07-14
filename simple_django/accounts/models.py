@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from simple_django.accounts.managers import EmailAddressManager
 from simple_django.accounts.types import UserAuthTokensDict
 
 
@@ -38,6 +39,8 @@ class EmailAddress(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    objects = EmailAddressManager()
 
     def set_as_primary(self):
         self.user.email = self.email
