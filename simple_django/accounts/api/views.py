@@ -68,6 +68,18 @@ def login_with_email_password(request):
     return response
 
 
+@api_view(http_method_names=["POST"])
+def logout(request):
+    response = Response()
+    response.delete_cookie(
+        settings.REFRESH_TOKEN_COOKIE_NAME,
+        "/",
+        settings.REFRESH_TOKEN_COOKIE_DOMAIN,
+        settings.REFRESH_TOKEN_COOKIE_SAMESITE,
+    )
+    return response
+
+
 class EmailAddressViewSet(
     RetrieveModelMixin, CreateModelMixin, DestroyModelMixin, GenericViewSet
 ):

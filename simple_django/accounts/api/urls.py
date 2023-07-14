@@ -16,4 +16,5 @@ urlpatterns = [
         views.login_with_email_password,
         name="email-password-login",
     ),
+    path("logout/", views.logout, name="logout"),
 ] + router.urls
