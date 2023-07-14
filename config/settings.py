@@ -414,3 +414,5 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     )
 }
+
+EMAIL_CONFIRMATION_URL = env.str("DJANGO_EMAIL_CONFIRMATION_URL")
