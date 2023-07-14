@@ -96,9 +96,7 @@ DJANGO_APPS = [
     "django.contrib.humanize",
     "django.contrib.admin",
 ]
-THIRD_PARTY_APPS = [
-    "django_extensions",
-]
+THIRD_PARTY_APPS = ["django_extensions", "rest_framework_simplejwt"]
 
 LOCAL_APPS = [
     "simple_django.core",
@@ -406,3 +404,13 @@ SHELL_PLUS_IMPORTS = [
 ]
 
 SHELL_PLUS_PRINT_SQL = True
+
+# Rest framework
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    )
+}
