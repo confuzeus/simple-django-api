@@ -45,9 +45,11 @@ stop-services:
 serve-django:
 	python manage.py runserver_plus --keep-meta-shutdown
 
+worker:
+	celery -A config worker --loglevel=DEBUG
+
 shell:
 	python manage.py shell
 
 migrate:
 	python manage.py migrate
-
