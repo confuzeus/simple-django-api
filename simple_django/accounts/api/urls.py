@@ -17,4 +17,5 @@ urlpatterns = [
         name="email-password-login",
     ),
     path("logout/", views.logout, name="logout"),
+    path("refresh-token/", views.refresh_access_token, name="refresh-token"),
 ] + router.urls

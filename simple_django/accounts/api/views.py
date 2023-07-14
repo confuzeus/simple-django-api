@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from rest_framework import status
 from rest_framework.decorators import action, api_view
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from rest_framework.mixins import (
@@ -10,6 +11,8 @@ from rest_framework.mixins import (
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
+from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from simple_django.accounts.api.permissions import IsEmailAddressOwnerOrReadOnly
 from simple_django.accounts.api.serializers import (
@@ -78,6 +81,23 @@ def logout(request):
         settings.REFRESH_TOKEN_COOKIE_SAMESITE,
     )
     return response
+
+
+@api_view(http_method_names=["POST"])
+def refresh_access_token(request):
+    try:
+        provided_token = request.COOKIES.get(settings.REFRESH_TOKEN_COOKIE_NAME)
+        if provided_token is None:
+            provided_token = request.data.get("refresh", "")
+        refresh = RefreshToken(provided_token)
+    except TokenError:
+        return Response(
+            {
+                "detail": "Session expired.",
+            },
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+    return Response({"access": str(refresh.access_token)})
 
 
 class EmailAddressViewSet(
