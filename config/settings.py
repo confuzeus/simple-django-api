@@ -1,6 +1,8 @@
+from datetime import timedelta
 from pathlib import Path
 
 import environ
+from corsheaders.defaults import default_headers
 from django.contrib import messages
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import gettext_lazy as _
@@ -96,7 +98,7 @@ DJANGO_APPS = [
     "django.contrib.humanize",
     "django.contrib.admin",
 ]
-THIRD_PARTY_APPS = ["django_extensions", "rest_framework_simplejwt"]
+THIRD_PARTY_APPS = ["django_extensions", "rest_framework_simplejwt", "corsheaders"]
 
 LOCAL_APPS = [
     "simple_django.core",
@@ -416,3 +418,16 @@ REST_FRAMEWORK = {
 }
 
 EMAIL_CONFIRMATION_URL = env.str("DJANGO_EMAIL_CONFIRMATION_URL")
+
+REFRESH_TOKEN_COOKIE_NAME = "refresh_token"
+REFRESH_TOKEN_COOKIE_SAMESITE = "Lax"
+
+REFRESH_TOKEN_COOKIE_DOMAIN = env.str("DJANGO_REFRESH_TOKEN_COOKIE_DOMAIN")
+
+CORS_ALLOWED_ORIGINS = env.list("DJANGO_CORS_ALLOWED_ORIGINS")
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_HEADERS = (*default_headers, "baggage", "sentry-trace")
+
+EMAIL_VERIFICATION_EXPIRY = timedelta(minutes=15)
