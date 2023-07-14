@@ -1,0 +1,12 @@
+Hello {{ user.first_name }},
+
+Please click the link below to confirm your email address so that you can start using your Simple Django account.
+
+{{ confirmation_url }}
+
+Can't click on the link? Copy the following code and enter it at the prompt provided when you log in.
+
+{{ verification_code }}
+
+Best regards,
+The Simple Django team.

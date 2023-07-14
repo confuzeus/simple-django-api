@@ -1,0 +1,22 @@
+{% extends "layouts/email.html" %}
+
+{% block title %}
+    Email address verification
+{% endblock %}
+
+{% block before_cta %}
+    <p>Click the link below to let us know that this email address is really yours.</p>
+{% endblock %}
+
+{% block cta %}
+    {% with cta_url=confirmation_url cta_text="Verify email address" %}
+        {% include "partials/_email-cta.html" %}
+    {% endwith %}
+
+{% endblock %}
+
+{% block after_cta %}
+    <p>Can't click the link? Then enter the following code at the prompt provided when you
+        log in.</p>
+    <p>{{ verification_code }}</p>
+{% endblock %}
