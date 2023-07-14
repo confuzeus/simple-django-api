@@ -13,6 +13,11 @@ services:
     ports:
       - "127.0.0.1:11211:11211"
 
+  rabbitmq:
+    image: rabbitmq
+    ports:
+      - "127.0.0.1:5672:5672"
+
   db:
     image: postgres:14
     ports:
