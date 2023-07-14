@@ -162,5 +162,6 @@ class LoginWithGoogleSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         user = validated_data["user"]
-        user.save()
+        if user._state.adding:
+            user.save()
         return user.get_auth_tokens()
