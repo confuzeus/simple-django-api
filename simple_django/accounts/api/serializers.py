@@ -95,3 +95,35 @@ class EmailVerificationSerializer(serializers.Serializer):
         )
         email_address.set_verified()
         return email_address
+
+
+class EmailPasswordLoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField()
+    remember = serializers.BooleanField(required=False)
+
+    def validate_email(self, value):
+        try:
+            User.objects.get(email=value)
+        except User.DoesNotExist:
+            raise ValidationError("Invalid email address.")
+        return value
+
+    def validate_password(self, value):
+        try:
+            user = User.objects.get(email=self.initial_data["email"])
+            password_valid = user.check_password(value)
+            if not password_valid:
+                raise ValidationError("Invalid password.")
+        except User.DoesNotExist:
+            pass
+        return value
+
+    def save(self, **kwargs):
+        user = User.objects.get(email=self.validated_data["email"])
+        user_serializer = UserSerializer(instance=user)
+        return {
+            "tokens": user.get_auth_tokens(),
+            "remember": self.validated_data.get("remember", False),
+            "user": user_serializer.data,
+        }

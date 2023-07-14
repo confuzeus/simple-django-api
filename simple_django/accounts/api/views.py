@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from rest_framework.decorators import action, api_view
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
@@ -13,6 +14,7 @@ from rest_framework.viewsets import GenericViewSet
 from simple_django.accounts.api.permissions import IsEmailAddressOwnerOrReadOnly
 from simple_django.accounts.api.serializers import (
     EmailAddressSerializer,
+    EmailPasswordLoginSerializer,
     EmailSignupSerializer,
     EmailVerificationSerializer,
     UserSerializer,
@@ -40,6 +42,29 @@ def signup_with_email(request):
     response_data = {"access": data["tokens"]["access"], "user": data["user"]}
     response = Response(data=response_data)
     response = set_refresh_token_cookie(response, data["tokens"]["refresh"], 0)
+    return response
+
+
+@api_view(http_method_names=["POST"])
+def login_with_email_password(request):
+    auth_serializer = EmailPasswordLoginSerializer(data=request.data)
+    auth_serializer.is_valid(raise_exception=True)
+    auth_data = auth_serializer.save()
+    data = {
+        "access": auth_data["tokens"]["access"],
+        "user": auth_data["user"],
+    }
+
+    response = Response(data=data)
+    if auth_data["remember"]:
+        refresh_token_expiry = settings.SESSION_COOKIE_AGE
+    else:
+        refresh_token_expiry = 0
+    response = set_refresh_token_cookie(
+        response,
+        auth_data["tokens"]["refresh"],
+        refresh_token_expiry,
+    )
     return response
 
 
