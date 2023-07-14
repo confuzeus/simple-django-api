@@ -11,8 +11,8 @@ urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),
     path("i18n/", include("django.conf.urls.i18n")),
     path("up/", core_views.healthcheck, name="healthcheck"),
-    path("api/accounts/", include("simple_django.accounts.api.urls")),
-    path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
+    path("api/", include("config.api_urls", namespace="api")),
+    path("", TemplateView.as_view(template_name="home.html"), name="home"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG or settings.TEST:  # pragma: no cover

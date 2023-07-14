@@ -4,4 +4,4 @@ from . import views
 
 app_name = "accounts"
 
-urlpatterns = [path("user/", views.UserAPIView.as_view(), name="user-api")]
+urlpatterns = [path("user/", views.UserAPIView.as_view(), name="user")]
