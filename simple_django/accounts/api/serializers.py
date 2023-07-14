@@ -10,6 +10,11 @@ User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep["email_verified"] = instance.email_verified
+        return rep
+
     class Meta:
         model = User
         fields = [
