@@ -20,6 +20,7 @@ from simple_django.accounts.api.serializers import (
     EmailPasswordLoginSerializer,
     EmailSignupSerializer,
     EmailVerificationSerializer,
+    LoginWithGoogleSerializer,
     UserSerializer,
 )
 from simple_django.accounts.api.utils import set_refresh_token_cookie
@@ -98,6 +99,16 @@ def refresh_access_token(request):
             status=status.HTTP_401_UNAUTHORIZED,
         )
     return Response({"access": str(refresh.access_token)})
+
+
+@api_view(http_method_names=["POST"])
+def login_with_google(request):
+    serializer = LoginWithGoogleSerializer(request.data)
+    serializer.is_valid(raise_exception=True)
+    tokens = serializer.save()
+    response = Response(data={"access": tokens["access"]})
+    response = set_refresh_token_cookie(response, tokens["refresh"])
+    return response
 
 
 class EmailAddressViewSet(

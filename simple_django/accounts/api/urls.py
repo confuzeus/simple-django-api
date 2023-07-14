@@ -16,6 +16,7 @@ urlpatterns = [
         views.login_with_email_password,
         name="email-password-login",
     ),
+    path("google-login/", views.login_with_google, name="google-login"),
     path("logout/", views.logout, name="logout"),
     path("refresh-token/", views.refresh_access_token, name="refresh-token"),
 ] + router.urls

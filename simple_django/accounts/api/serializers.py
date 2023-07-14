@@ -1,3 +1,6 @@
+import logging
+
+import requests
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from rest_framework import serializers
@@ -7,6 +10,8 @@ from simple_django.accounts.models import EmailAddress
 from simple_django.accounts.tasks import send_verification_email
 
 User = get_user_model()
+
+log = logging.getLogger("simple_django.accounts.api.serializers")
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -127,3 +132,35 @@ class EmailPasswordLoginSerializer(serializers.Serializer):
             "remember": self.validated_data.get("remember", False),
             "user": user_serializer.data,
         }
+
+
+class LoginWithGoogleSerializer(serializers.Serializer):
+    access_token = serializers.CharField()
+
+    def validate(self, attrs):
+        validated_data = super().validate(attrs)
+        try:
+            response = requests.get(
+                "https://www.googleapis.com/oauth2/v3/userinfo",
+                headers={"Authorization": f"Bearer {validated_data['access_token']}"},
+            )
+            if response.ok:
+                google_user_profile = response.json()
+                try:
+                    user = User.objects.get(email=google_user_profile["email"])
+                except User.DoesNotexist:
+                    user = User(
+                        email=google_user_profile["email"],
+                        first_name=google_user_profile["given_name"],
+                        last_name=google_user_profile["family_name"],
+                    )
+                    user.full_clean()
+                return {**validated_data, "user": user}
+        except Exception as e:
+            log.exception(e)
+        raise ValidationError("Invalid token.")
+
+    def create(self, validated_data):
+        user = validated_data["user"]
+        user.save()
+        return user.get_auth_tokens()
