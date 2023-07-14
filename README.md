@@ -1,22 +1,35 @@
-# Simple Django Project Template
+# Simple Django API Project Template
 
-This template contains everything you need to bootstrap a new Django project.
+This template contains everything you need to bootstrap a new Django based API.
+
+## Features
+
+- Authentication with JWT.
+- Full signup with email confirmation, login, and logout flow.
+- User model and CRUD.
+
+## Requirements
+
+- [Poetry](https://python-poetry.org/)
+- (Optional) [Docker](https://www.docker.com/)
+- (Optional) [Docker Compose](https://docs.docker.com/compose/install/)
 
 ## Quick start
 
-Clone the project and clean up git.
+[Download](https://github.com/confuzeus/simple-django-api/releases) the latest release.
 
-Your can either delete .git or set the origin to your own repo:
+Or, clone the project and delete `.git` so that you can initialize your own:
 
 ```shell
-git remote set-url origin <your-repo>
+rm -rf .git
+git init
 ```
+
+Copy the sample environment file. Then edit it as per your needs.
 
 ```shell
 cp appconfig.example.env appconfig.env
 ```
-
-Edit the file and change all the variables to your liking.
 
 You should also rename the project now unless you really
 like the name *Simple Django*.
@@ -28,6 +41,9 @@ Bootstrap the project with make:
 ```shell
 make
 ```
+
+This will install dependencies, start the docker services, run tests,
+and finally, migrate the database.
 
 ## License and Copyright
 
