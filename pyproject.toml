@@ -16,7 +16,7 @@ readme = "README.md"
 packages = [{include = "simple_django"}]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.12"
 argon2-cffi = "^21.3.0"
 whitenoise = {extras = ["brotli"], version = "^6.3.0"}
 pymemcache = "^4.0.0"
